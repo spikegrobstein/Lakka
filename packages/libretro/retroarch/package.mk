@@ -48,6 +48,18 @@ if [ "$OPENGLES_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGLES"
 fi
 
+configure_host() {
+  :
+}
+
+make_host() {
+  :
+}
+
+makeinstall_host() {
+  cp $ROOT/$PKG_BUILD/tools/cg2glsl.py $SYSROOT_PREFIX/usr/bin/
+}
+
 pre_configure_target() {
   # workaround for https://github.com/libretro/RetroArch/issues/1078
   strip_lto

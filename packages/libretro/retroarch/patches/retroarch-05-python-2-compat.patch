@@ -1,0 +1,65 @@
+diff --git a/tools/cg2glsl.py b/tools/cg2glsl.py
+index 1db1a47..73f6e8d 100755
+--- a/tools/cg2glsl.py
++++ b/tools/cg2glsl.py
+@@ -15,7 +15,7 @@ batch_mode = False
+ 
+ def log(*arg):
+    if not batch_mode:
+-      print(*arg)
++      print arg
+ 
+ def remove_comments(source_lines):
+    ret = []
+@@ -703,7 +703,7 @@ def main():
+          for source in filter(lambda path: path_ext(path) == '.cg', [os.path.join(dirname, filename) for filename in filenames]):
+             dest = convert_path(source, sys.argv[1], sys.argv[2], ('.cg', '.glsl'))
+             dirpath = os.path.split(dest)[0]
+-            print('Dirpath:', dirpath)
++            print 'Dirpath:', dirpath
+             if not os.path.isdir(dirpath):
+                try:
+                   os.makedirs(dirpath)
+@@ -713,7 +713,7 @@ def main():
+ 
+             try:
+                ret = convert(source, dest)
+-               print(source, '->', dest, '...', 'succeeded!' if ret == 0 else 'failed!')
++               print source, '->', dest, '...', 'succeeded!' if ret == 0 else 'failed!'
+ 
+                if ret == 0:
+                   success_cnt += 1
+@@ -721,14 +721,14 @@ def main():
+                   failed_cnt += 1
+                   failed_files.append(source)
+             except Exception as e:
+-               print(e)
++               print e
+                failed_files.append(source)
+                failed_cnt += 1
+ 
+          for source in filter(lambda path: path_ext(path) == '.cgp', [os.path.join(dirname, filename) for filename in filenames]):
+             dest = convert_path(source, sys.argv[1], sys.argv[2], ('.cgp', '.glslp'))
+             dirpath = os.path.split(dest)[0]
+-            print('Dirpath:', dirpath)
++            print 'Dirpath:', dirpath
+             if not os.path.isdir(dirpath):
+                try:
+                   os.makedirs(dirpath)
+@@ -744,12 +744,12 @@ def main():
+                failed_files.append(source)
+                failed_cnt += 1
+ 
+-      print(success_cnt, 'shaders converted successfully.')
+-      print(failed_cnt, 'shaders failed.')
++      print success_cnt, 'shaders converted successfully.'
++      print failed_cnt, 'shaders failed.'
+       if failed_cnt > 0:
+-         print('Failed shaders:')
++         print 'Failed shaders:'
+          for path in failed_files:
+-            print(path)
++            print path
+ 
+    else:
+       source = sys.argv[1]
