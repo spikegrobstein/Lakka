@@ -162,7 +162,7 @@
     # install legacy drivers to i386 ARCH
     GRAPHIC_DRIVERS="r200 r300 r600 i915 i965 nouveau"
   elif [ "$TARGET_ARCH" = "x86_64" ]; then
-    GRAPHIC_DRIVERS="r300 r600 radeonsi i915 i965 nouveau"
+    GRAPHIC_DRIVERS="r300 r600 radeonsi i915 i965 nouveau vmware"
   fi
 
 # build and install remote support (yes / no)

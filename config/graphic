@@ -56,6 +56,11 @@ get_graphicdrivers() {
       COMPOSITE_SUPPORT="yes"
     fi
 
+    if [ "$drv" = "vmware" ]; then
+      DRI_DRIVERS="$DRI_DRIVERS,swrast"
+      GALLIUM_DRIVERS="$GALLIUM_DRIVERS,svga"
+    fi
+
     if [ "$drv" = "nvidia" ]; then
       XORG_DRIVERS="$XORG_DRIVERS nvidia"
       VDPAU_SUPPORT="yes"
