@@ -1,0 +1,22 @@
+[Unit]
+Description=Wifi Menu
+After=multi-user.target
+
+[Service]
+Environment=TTY=1
+WorkingDirectory=/storage
+ExecStart=/bin/sh -c 'clear; echo fufuu; . /etc/profile; exec /usr/bin/connman-ncurses'
+
+Restart=always
+RestartSec=0
+StandardInput=tty
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+KillMode=process
+IgnoreSIGPIPE=no
+# bash ignores SIGTERM
+KillSignal=SIGHUP
+
+[Install]
+WantedBy=connman-ncurses.target

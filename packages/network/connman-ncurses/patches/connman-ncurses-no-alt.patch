@@ -1,0 +1,14 @@
+diff --git a/main.c b/main.c
+index b035962..da8f7c1 100644
+--- a/main.c
++++ b/main.c
+@@ -605,7 +605,8 @@ static void popup_btn_action_ok(void)
+ 		if (!field_str_clean)
+ 			field_str_clean = "";
+ 
+-		json_object_object_add(cmd_data, label_str_clean,
++		if (i == 1)
++			json_object_object_add(cmd_data, label_str_clean,
+ 				json_object_new_string(field_str_clean));
+ 	}
+ 

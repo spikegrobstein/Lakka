@@ -86,7 +86,7 @@ disable_overscan=1
 ################################################################################
 
 # Force HDMI even if unplugged or powered off
-# hdmi_force_hotplug=1
+hdmi_force_hotplug=2
 
 # Doesn't sent initial active source message.
 # Avoids bringing CEC (enabled TV) out of standby and channel switch when
@@ -115,4 +115,4 @@ disable_splash=1
 # try with this setting uncommented.
 # https://github.com/libretro/Lakka/issues/200
 ################################################################################
-# hdmi_drive=2
+hdmi_drive=1

@@ -147,6 +147,8 @@ makeinstall_target() {
   # Menu
   sed -i -e "s/# menu_core_enable = true/menu_core_enable = false/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# thumbnails_directory =/thumbnails_directory = \/storage\/thumbnails/" $INSTALL/etc/retroarch.cfg
+  echo "xmb_theme = 2" >> $INSTALL/etc/retroarch.cfg
+  echo "xmb_menu_color_theme = 8" >> $INSTALL/etc/retroarch.cfg
 
   # Updater
   if [ "$ARCH" == "arm" ]; then

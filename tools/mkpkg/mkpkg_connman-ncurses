@@ -21,7 +21,7 @@
 
 echo "getting sources..."
   if [ ! -d connman-ncurses.git ]; then
-    git clone https://github.com/eurogiciel-oss/connman-json-client.git -b master connman-ncurses.git
+    git clone https://github.com/lakkatv/connman-json-client.git -b master connman-ncurses.git
   fi
 
   cd connman-ncurses.git
