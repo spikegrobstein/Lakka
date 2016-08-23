@@ -1,0 +1,143 @@
+diff -Naur retroarch.git/configuration.c retroarch.patch/configuration.c
+--- retroarch.git/configuration.c	2016-08-23 13:31:23.945845138 +0200
++++ retroarch.patch/configuration.c	2016-08-23 13:43:50.992094516 +0200
+@@ -598,6 +598,7 @@
+    settings->ssh_enable = path_file_exists(LAKKA_SSH_PATH);
+    settings->samba_enable = path_file_exists(LAKKA_SAMBA_PATH);
+    settings->bluetooth_enable = path_file_exists(LAKKA_BLUETOOTH_PATH);
++   settings->connect_enable = path_file_exists(LAKKA_CONNECT_PATH);
+ #endif
+ 
+ #ifdef HAVE_MENU
+@@ -1817,6 +1818,7 @@
+    settings->ssh_enable = path_file_exists(LAKKA_SSH_PATH);
+    settings->samba_enable = path_file_exists(LAKKA_SAMBA_PATH);
+    settings->bluetooth_enable = path_file_exists(LAKKA_BLUETOOTH_PATH);
++   settings->connect_enable = path_file_exists(LAKKA_CONNECT_PATH);
+ #endif
+ 
+ #ifdef HAVE_NETWORKGAMEPAD
+@@ -3055,6 +3057,10 @@
+       fclose(fopen(LAKKA_BLUETOOTH_PATH, "w"));
+    else
+       remove(LAKKA_BLUETOOTH_PATH);
++   if (settings->connect_enable)
++      fclose(fopen(LAKKA_CONNECT_PATH, "w"));
++   else
++      remove(LAKKA_CONNECT_PATH);
+ #endif
+ 
+    config_set_float(conf, "fastforward_ratio",
+diff -Naur retroarch.git/configuration.h retroarch.patch/configuration.h
+--- retroarch.git/configuration.h	2016-08-23 13:31:24.125851460 +0200
++++ retroarch.patch/configuration.h	2016-08-23 13:44:30.741490625 +0200
+@@ -440,6 +440,7 @@
+    bool ssh_enable;
+    bool samba_enable;
+    bool bluetooth_enable;
++   bool connect_enable;
+ #endif
+ 
+ } settings_t;
+diff -Naur retroarch.git/intl/msg_hash_us.c retroarch.patch/intl/msg_hash_us.c
+--- retroarch.git/intl/msg_hash_us.c	2016-08-23 13:31:22.105780455 +0200
++++ retroarch.patch/intl/msg_hash_us.c	2016-08-23 13:41:35.075320315 +0200
+@@ -1614,6 +1614,8 @@
+          return "samba_enable";
+       case MENU_ENUM_LABEL_BLUETOOTH_ENABLE:
+          return "bluetooth_enable";
++      case MENU_ENUM_LABEL_CONNECT_ENABLE:
++         return "connect_enable";
+       case MENU_ENUM_LABEL_NETPLAY_DELAY_FRAMES:
+          return "netplay_delay_frames";
+       case MENU_ENUM_LABEL_NETPLAY_MODE:
+@@ -2882,6 +2884,8 @@
+          return "SAMBA Enable";
+       case MENU_ENUM_LABEL_VALUE_BLUETOOTH_ENABLE:
+          return "Bluetooth Enable";
++      case MENU_ENUM_LABEL_VALUE_CONNECT_ENABLE:
++         return "Boot to Wi-Fi Menu";
+       case MENU_ENUM_LABEL_VALUE_NETPLAY_DELAY_FRAMES:
+          return "Netplay Delay Frames";
+       case MENU_ENUM_LABEL_VALUE_NETPLAY_MODE:
+diff -Naur retroarch.git/lakka.h retroarch.patch/lakka.h
+--- retroarch.git/lakka.h	2016-08-23 13:31:15.661553920 +0200
++++ retroarch.patch/lakka.h	2016-08-23 13:34:05.895537524 +0200
+@@ -20,6 +20,7 @@
+ #define LAKKA_SSH_PATH       "/storage/.cache/services/sshd.conf"
+ #define LAKKA_SAMBA_PATH     "/storage/.cache/services/samba.conf"
+ #define LAKKA_BLUETOOTH_PATH "/storage/.cache/services/bluez.conf"
++#define LAKKA_CONNECT_PATH   "/storage/.please_connect_me"
+ #define LAKKA_UPDATE_DIR     "/storage/.update/"
+ 
+ #endif
+diff -Naur retroarch.git/menu/menu_displaylist.c retroarch.patch/menu/menu_displaylist.c
+--- retroarch.git/menu/menu_displaylist.c	2016-08-23 13:31:16.121570091 +0200
++++ retroarch.patch/menu/menu_displaylist.c	2016-08-23 13:39:23.250689209 +0200
+@@ -4623,6 +4623,10 @@
+                MENU_ENUM_LABEL_BLUETOOTH_ENABLE,
+                PARSE_ONLY_BOOL, false);
+ 
++         menu_displaylist_parse_settings_enum(menu, info,
++               MENU_ENUM_LABEL_CONNECT_ENABLE,
++               PARSE_ONLY_BOOL, false);
++
+          info->need_refresh = true;
+          info->need_push    = true;
+          break;
+diff -Naur retroarch.git/menu/menu_setting.c retroarch.patch/menu/menu_setting.c
+--- retroarch.git/menu/menu_setting.c	2016-08-23 13:31:16.101569388 +0200
++++ retroarch.patch/menu/menu_setting.c	2016-08-23 13:38:46.681404387 +0200
+@@ -3661,6 +3661,16 @@
+    systemd_service_toggle(LAKKA_BLUETOOTH_PATH, (char*)"bluetooth.service",
+          enable);
+ }
++
++static void connect_enable_toggle_change_handler(void *data)
++{
++   bool enable           = false;
++   settings_t *settings  = config_get_ptr();
++   if (settings && settings->connect_enable)
++      fclose(fopen(LAKKA_CONNECT_PATH, "w"));
++   else
++      remove(LAKKA_CONNECT_PATH);
++}
+ #endif
+ 
+ enum settings_list_type
+@@ -7729,6 +7739,23 @@
+             (*list)[list_info->index - 1].change_handler = bluetooth_enable_toggle_change_handler;
+             menu_settings_list_current_add_enum_idx(list, list_info, MENU_ENUM_LABEL_BLUETOOTH_ENABLE);
+ 
++            CONFIG_BOOL(
++                  list, list_info,
++                  &settings->connect_enable,
++                  msg_hash_to_str(MENU_ENUM_LABEL_CONNECT_ENABLE),
++                  msg_hash_to_str(MENU_ENUM_LABEL_VALUE_CONNECT_ENABLE),
++                  true,
++                  msg_hash_to_str(MENU_ENUM_LABEL_VALUE_OFF),
++                  msg_hash_to_str(MENU_ENUM_LABEL_VALUE_ON),
++                  &group_info,
++                  &subgroup_info,
++                  parent_group,
++                  general_write_handler,
++                  general_read_handler,
++                  SD_FLAG_NONE);
++            (*list)[list_info->index - 1].change_handler = connect_enable_toggle_change_handler;
++            menu_settings_list_current_add_enum_idx(list, list_info, MENU_ENUM_LABEL_CONNECT_ENABLE);
++
+             END_SUB_GROUP(list, list_info, parent_group);
+             END_GROUP(list, list_info, parent_group);
+ #endif
+diff -Naur retroarch.git/msg_hash.h retroarch.patch/msg_hash.h
+--- retroarch.git/msg_hash.h	2016-08-23 13:31:23.869842459 +0200
++++ retroarch.patch/msg_hash.h	2016-08-23 13:42:08.852506833 +0200
+@@ -1034,6 +1034,8 @@
+    MENU_ENUM_LABEL_VALUE_SAMBA_ENABLE,
+    MENU_ENUM_LABEL_BLUETOOTH_ENABLE,
+    MENU_ENUM_LABEL_VALUE_BLUETOOTH_ENABLE,
++   MENU_ENUM_LABEL_CONNECT_ENABLE,
++   MENU_ENUM_LABEL_VALUE_CONNECT_ENABLE,
+    MENU_ENUM_LABEL_NETPLAY_CLIENT_SWAP_INPUT,
+    MENU_ENUM_LABEL_VALUE_NETPLAY_CLIENT_SWAP_INPUT,
+    MENU_ENUM_LABEL_NETPLAY_DELAY_FRAMES,
