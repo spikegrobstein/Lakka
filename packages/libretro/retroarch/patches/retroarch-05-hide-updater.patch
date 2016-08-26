@@ -1,0 +1,17 @@
+diff -Naur retroarch.git/menu/menu_displaylist.c retroarch.patch/menu/menu_displaylist.c
+--- retroarch.git/menu/menu_displaylist.c	2016-08-27 00:44:35.533114074 +0200
++++ retroarch.patch/menu/menu_displaylist.c	2016-08-27 00:46:37.393497089 +0200
+@@ -2916,11 +2916,11 @@
+ #ifdef HAVE_NETWORKING
+ 
+ #ifdef HAVE_LAKKA
+-   menu_entries_append_enum(info->list,
++/*   menu_entries_append_enum(info->list,
+          msg_hash_to_str(MENU_ENUM_LABEL_VALUE_UPDATE_LAKKA),
+          msg_hash_to_str(MENU_ENUM_LABEL_UPDATE_LAKKA),
+          MENU_ENUM_LABEL_UPDATE_LAKKA,
+-         MENU_SETTING_ACTION, 0, 0);
++         MENU_SETTING_ACTION, 0, 0);*/
+ 
+    menu_entries_append_enum(info->list,
+          msg_hash_to_str(MENU_ENUM_LABEL_VALUE_THUMBNAILS_UPDATER_LIST),
